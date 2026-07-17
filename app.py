@@ -13,11 +13,14 @@ app = Flask(__name__)
 
 app.secret_key = "AI_EXPENSE_SYSTEM_2026"
 
+import os
+
 conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="Anmol@359",
-    database="finance_system"
+    host=os.getenv("MYSQLHOST"),
+    user=os.getenv("MYSQLUSER"),
+    password=os.getenv("MYSQLPASSWORD"),
+    database=os.getenv("MYSQLDATABASE"),
+    port=int(os.getenv("MYSQLPORT"))
 )
 
 cursor = conn.cursor(buffered=True)
