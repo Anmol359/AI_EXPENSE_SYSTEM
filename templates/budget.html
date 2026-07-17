@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<div class="card shadow-lg border-0">
+
+<div class="card-header bg-success text-white">
+<h3>💰 Set Monthly Budget</h3>
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="row">
+
+<div class="col-md-6">
+
+<label class="form-label">Monthly Budget</label>
+
+<input
+type="number"
+name="budget"
+class="form-control form-control-lg"
+placeholder="Enter Monthly Budget"
+required>
+
+</div>
+
+</div>
+
+<br>
+
+<button class="btn btn-success btn-lg">
+💾 Save Budget
+</button>
+
+<a href="/dashboard" class="btn btn-secondary btn-lg">
+⬅ Back
+</a>
+
+</form>
+
+<hr>
+
+<div class="alert alert-info mt-4">
+
+<h5>💡 Budget Tips</h5>
+
+<ul>
+<li>Spend less than 80% of your budget.</li>
+<li>Save at least 20% every month.</li>
+<li>Track expenses weekly.</li>
+<li>Avoid unnecessary shopping.</li>
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

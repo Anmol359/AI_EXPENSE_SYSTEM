@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}
+Expense History
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-success text-white">
+
+            <h3>
+                <i class="fa-solid fa-table"></i>
+                Expense History
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="mb-3">
+
+                <a href="/add_expense" class="btn btn-primary">
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    Add New Expense
+
+                </a>
+
+            </div>
+
+            <form method="GET" action="/expenses">
+
+<div class="input-group mb-3">
+
+<input
+type="text"
+name="search"
+class="form-control"
+placeholder="Search Category or Description">
+
+<button class="btn btn-primary">
+
+Search
+
+</button>
+
+</div>
+
+</form>
+            <table class="table table-bordered table-hover table-striped align-middle">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Amount</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th width="180">Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% if expenses %}
+
+                    {% for expense in expenses %}
+
+                    <tr>
+
+                        <td>{{ expense[0] }}</td>
+
+                        <td class="fw-bold text-danger">
+                            ₹{{ expense[2] }}
+                        </td>
+
+                        <td>{{ expense[3] }}</td>
+
+                        <td>{{ expense[4] }}</td>
+
+                        <td>{{ expense[5] }}</td>
+
+                        <td>
+
+                            <a href="/edit_expense/{{ expense[0] }}"
+                               class="btn btn-warning btn-sm">
+
+                                <i class="fa-solid fa-pen"></i>
+                                Edit
+
+                            </a>
+
+                            <a href="/delete_expense/{{ expense[0] }}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Are you sure you want to delete this expense?')">
+
+                                <i class="fa-solid fa-trash"></i>
+                                Delete
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="6" class="text-center text-muted">
+
+                            No Expenses Found
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

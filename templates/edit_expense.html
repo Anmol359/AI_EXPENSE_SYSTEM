@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Expense
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+<div class="col-md-6">
+
+<div class="card shadow">
+
+<div class="card-header bg-warning text-dark">
+
+<h3>
+
+<i class="fa-solid fa-pen-to-square"></i>
+
+Edit Expense
+
+</h3>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Amount
+
+</label>
+
+<input
+type="number"
+class="form-control"
+name="amount"
+value="{{ expense[2] }}"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Category
+
+</label>
+
+<input
+type="text"
+class="form-control"
+name="category"
+value="{{ expense[3] }}"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Description
+
+</label>
+
+<input
+type="text"
+class="form-control"
+name="description"
+value="{{ expense[4] }}">
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Expense Date
+
+</label>
+
+<input
+type="date"
+class="form-control"
+name="expense_date"
+value="{{ expense[5] }}"
+required>
+
+</div>
+
+<button class="btn btn-warning">
+
+<i class="fa-solid fa-floppy-disk"></i>
+
+Update Expense
+
+</button>
+
+<a href="/expenses"
+class="btn btn-secondary">
+
+Cancel
+
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

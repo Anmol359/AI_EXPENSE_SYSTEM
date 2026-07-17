@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+
+<div class="login-page">
+
+    <div class="login-container">
+
+        <div class="login-card">
+
+            <h2 class="text-center mb-4">
+                📝 User Registration
+            </h2>
+
+            <form method="POST">
+
+                <div class="mb-3">
+                    <input type="text"
+                           name="name"
+                           class="form-control"
+                           placeholder="Enter Name"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <input type="email"
+                           name="email"
+                           class="form-control"
+                           placeholder="Enter Email"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <input type="password"
+                           name="password"
+                           class="form-control"
+                           placeholder="Enter Password"
+                           required>
+                </div>
+
+                <button class="btn btn-primary w-100">
+                    Register
+                </button>
+
+            </form>
+
+            <hr>
+
+            <p class="text-center">
+                Already have an account?
+                <a href="/login" class="text-white">
+                    Login
+                </a>
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

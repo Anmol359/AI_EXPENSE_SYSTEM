@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h2 class="fw-bold mb-4">
+        📊 Expense Analytics Dashboard
+    </h2>
+
+    <!-- Chart Selection -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-body">
+
+            <form action="/analytics" method="GET">
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <label class="fw-bold mb-2">
+                            📈 Select Chart Type
+                        </label>
+
+                        <select class="form-select" name="chart">
+
+                            <option value="pie" {% if chart=="pie" %}selected{% endif %}>Pie Chart</option>
+
+                            <option value="bar" {% if chart=="bar" %}selected{% endif %}>Bar Chart</option>
+
+                            <option value="line" {% if chart=="line" %}selected{% endif %}>Line Chart</option>
+
+                            <option value="donut" {% if chart=="donut" %}selected{% endif %}>Donut Chart</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-3 d-flex align-items-end">
+
+                        <button class="btn btn-primary w-100">
+                            Generate Chart
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- Top Cards -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body text-center">
+
+                    <h5 class="text-primary">
+                        📊 Reports
+                    </h5>
+
+                    <h2>4</h2>
+
+                    <small class="text-muted">
+                        Available Charts
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body text-center">
+
+                    <h5 class="text-success">
+                        📈 Analysis
+                    </h5>
+
+                    <h2>100%</h2>
+
+                    <small class="text-muted">
+                        Generated Successfully
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body text-center">
+
+                    <h5 class="text-danger">
+                        🤖 AI Status
+                    </h5>
+
+                    <h2>Active</h2>
+
+                    <small class="text-muted">
+                        Dynamic Visualization Enabled
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Dynamic Chart -->
+
+    <div class="card shadow-lg border-0 mb-4">
+
+        <div class="card-header bg-primary text-white">
+
+            📈 Generated Chart
+
+        </div>
+
+        <div class="card-body text-center">
+
+            <img src="{{ url_for('static', filename='charts/chart.png') }}"
+                 class="img-fluid rounded">
+
+        </div>
+
+    </div>
+
+    <!-- AI Summary -->
+
+    <div class="card shadow-lg border-0">
+
+        <div class="card-header bg-dark text-white">
+
+            🤖 AI Expense Summary
+
+        </div>
+
+        <div class="card-body">
+
+            <ul class="list-group list-group-flush">
+
+                <li class="list-group-item">
+                    ✅ Dynamic Chart generated successfully.
+                </li>
+
+                <li class="list-group-item">
+                    📊 Select any chart from the dropdown menu.
+                </li>
+
+                <li class="list-group-item">
+                    📈 The system automatically generates the selected visualization.
+                </li>
+
+                <li class="list-group-item">
+                    💡 AI helps users understand their spending behaviour
+
+{% endblock %}                    
