@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, session
-import mysql.connector
+import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
@@ -8,6 +8,7 @@ from reportlab.pdfgen import canvas
 import openpyxl
 from openpyxl import Workbook
 from flask import send_file
+import traceback
 
 app = Flask(__name__)
 
@@ -15,15 +16,9 @@ app.secret_key = "AI_EXPENSE_SYSTEM_2026"
 
 import os
 
-conn = mysql.connector.connect(
-    host=os.getenv("MYSQLHOST"),
-    user=os.getenv("MYSQLUSER"),
-    password=os.getenv("MYSQLPASSWORD"),
-    database=os.getenv("MYSQLDATABASE"),
-    port=int(os.getenv("MYSQLPORT"))
-)
-
-cursor = conn.cursor(buffered=True)
+conn = sqlite3.connect("finance_system.db", check_same_thread=False)
+conn.row_factory = sqlite3.Row
+cursor = conn.cursor()
 
 
 # ---------------- HOME ----------------
@@ -46,7 +41,7 @@ def register():
 
         sql = """
         INSERT INTO users(name,email,password)
-        VALUES(%s,%s,%s)
+        VALUES(?,?,?)
         """
 
         values = (name, email, password)
@@ -71,7 +66,7 @@ def login():
 
         sql = """
         SELECT * FROM users
-        WHERE email=%s AND password=%s
+        WHERE email=? AND password=?
         """
 
         values = (email, password)
@@ -114,13 +109,13 @@ def dashboard():
     if "user_id" not in session:
         return redirect("/login")
 
-    mycursor = conn.cursor(buffered=True)
+    mycursor = conn.cursor()
 
     # Total Expense
     sql = """
-    SELECT IFNULL(SUM(amount),0)
+    SELECT COALESCE(SUM(amount),0)
     FROM expenses
-    WHERE user_id=%s
+    WHERE user_id=?
     """
 
     mycursor.execute(sql, (session["user_id"],))
@@ -131,7 +126,7 @@ def dashboard():
     sql = """
     SELECT COUNT(*)
     FROM expenses
-    WHERE user_id=%s
+    WHERE user_id=?
     """
 
     mycursor.execute(sql, (session["user_id"],))
@@ -144,7 +139,7 @@ def dashboard():
     sql = """
     SELECT monthly_budget
     FROM budget
-    WHERE user_id=%s
+    WHERE user_id=?
     ORDER BY budget_id DESC
     LIMIT 1
     """
@@ -218,12 +213,12 @@ def add_expense():
         description = request.form["description"]
         expense_date = request.form["expense_date"]
 
-        mycursor = conn.cursor(buffered=True)
+        mycursor = conn.cursor()
 
         sql = """
         INSERT INTO expenses
         (user_id,amount,category,description,expense_date)
-        VALUES(%s,%s,%s,%s,%s)
+        VALUES(?,?,?,?,?)
         """
 
         values = (
@@ -252,7 +247,7 @@ def expenses():
     if "user_id" not in session:
         return redirect("/login")
 
-    mycursor = conn.cursor(buffered=True)
+    mycursor = conn.cursor()
 
     search = request.args.get("search")
 
@@ -261,8 +256,8 @@ def expenses():
         sql = """
         SELECT *
         FROM expenses
-        WHERE user_id=%s
-        AND (category LIKE %s OR description LIKE %s)
+        WHERE user_id=?
+        AND (category LIKE ? OR description LIKE ?)
         ORDER BY expense_id DESC
         """
 
@@ -282,7 +277,7 @@ def expenses():
         sql = """
         SELECT *
         FROM expenses
-        WHERE user_id=%s
+        WHERE user_id=?
         ORDER BY expense_id DESC
         """
 
@@ -311,7 +306,7 @@ def edit_expense(id):
     if "user_id" not in session:
         return redirect("/login")
 
-    mycursor = conn.cursor(buffered=True)
+    mycursor = conn.cursor()
 
     if request.method == "POST":
 
@@ -322,12 +317,12 @@ def edit_expense(id):
 
         sql = """
         UPDATE expenses
-        SET amount=%s,
-            category=%s,
-            description=%s,
-            expense_date=%s
-        WHERE expense_id=%s
-        AND user_id=%s
+        SET amount=?,
+            category=?,
+            description=?,
+            expense_date=?
+        WHERE expense_id=?
+        AND user_id=?
         """
 
         values = (
@@ -348,8 +343,8 @@ def edit_expense(id):
     sql = """
     SELECT *
     FROM expenses
-    WHERE expense_id=%s
-    AND user_id=%s
+    WHERE expense_id=?
+    AND user_id=?
     """
 
     mycursor.execute(sql, (id, session["user_id"]))
@@ -372,12 +367,12 @@ def delete_expense(id):
     if "user_id" not in session:
         return redirect("/login")
 
-    mycursor = conn.cursor(buffered=True)
+    mycursor = conn.cursor()
 
     sql = """
     DELETE FROM expenses
-    WHERE expense_id=%s
-    AND user_id=%s
+    WHERE expense_id=?
+    AND user_id=?
     """
 
     mycursor.execute(sql, (id, session["user_id"]))
@@ -396,7 +391,7 @@ def budget():
     if "user_id" not in session:
         return redirect("/login")
 
-    mycursor = conn.cursor(buffered=True)
+    mycursor = conn.cursor()
 
     if request.method == "POST":
 
@@ -404,15 +399,21 @@ def budget():
 
         sql = """
         INSERT INTO budget(user_id,monthly_budget,month,year)
-        VALUES(%s,%s,MONTH(CURDATE()),YEAR(CURDATE()))
+        VALUES(?,?,?,?)
         """
 
+        from datetime import datetime
+
+        today = datetime.now()
+
         mycursor.execute(
-            sql,
-            (
-                session["user_id"],
-                budget
-            )
+          sql,
+          (
+            session["user_id"],
+            budget,
+            today.month,
+            today.year
+          )
         )
 
         conn.commit()
@@ -439,7 +440,7 @@ def analytics():
     query = """
     SELECT category, SUM(amount) AS total
     FROM expenses
-    WHERE user_id=%s
+    WHERE user_id=?
     GROUP BY category
     """
 
@@ -453,7 +454,7 @@ def analytics():
     line_query = """
     SELECT expense_date, SUM(amount) AS total
     FROM expenses
-    WHERE user_id=%s
+    WHERE user_id=?
     GROUP BY expense_date
     ORDER BY expense_date
     """
@@ -526,11 +527,11 @@ def download_pdf():
     if "user_id" not in session:
         return redirect("/login")
 
-    mycursor = conn.cursor(buffered=True)
+    mycursor = conn.cursor()
 
     # Total Expense
     mycursor.execute(
-        "SELECT IFNULL(SUM(amount),0) FROM expenses WHERE user_id=%s",
+        "SELECT COALESCE(SUM(amount),0) FROM expenses WHERE user_id=?",
         (session["user_id"],)
     )
     total = float(mycursor.fetchone()[0])
@@ -540,7 +541,7 @@ def download_pdf():
         """
         SELECT monthly_budget
         FROM budget
-        WHERE user_id=%s
+        WHERE user_id=?
         ORDER BY budget_id DESC
         LIMIT 1
         """,
@@ -583,7 +584,7 @@ def export_excel():
     sql = """
     SELECT expense_date, category, description, amount
     FROM expenses
-    WHERE user_id=%s
+    WHERE user_id=?
     ORDER BY expense_date DESC
     """
 
@@ -598,7 +599,7 @@ def export_excel():
     ws.append(["Date", "Category", "Description", "Amount"])
 
     for row in data:
-        ws.append(row)
+        ws.append(list(row))
     
     from openpyxl.styles import Font
 
@@ -612,7 +613,9 @@ def export_excel():
     ws.column_dimensions["C"].width = 30
     ws.column_dimensions["D"].width = 15
 
+    os.makedirs("reports", exist_ok=True)
 
+    filepath = os.path.join("reports", "expense_report.xlsx")
     filepath = "reports/expense_report.xlsx"
 
     wb.save(filepath)
@@ -625,4 +628,4 @@ def export_excel():
 # ---------------- RUN APP ----------------
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
