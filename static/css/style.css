@@ -140,6 +140,7 @@ footer p{
 
 .d-flex{
     display:flex;
+    min-height:100vh;
 }
 
 .content{
@@ -147,4 +148,72 @@ footer p{
     margin-left:250px;
     padding:30px;
     overflow-x:auto;
+}
+
+/* ================= MOBILE RESPONSIVE ================= */
+
+@media (max-width:768px){
+
+    .d-flex{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        position:relative;
+        width:100%;
+        height:auto;
+    }
+
+    .sidebar h3{
+        text-align:center;
+        padding:15px;
+    }
+
+    .sidebar a{
+        padding:12px 20px;
+        font-size:16px;
+    }
+
+    .content{
+        margin-left:0;
+        width:100%;
+        padding:15px;
+    }
+
+    footer{
+        margin-left:0;
+        width:100%;
+    }
+
+    .container-fluid{
+        padding:10px !important;
+    }
+
+    .card{
+        margin-bottom:15px;
+    }
+
+    .btn{
+        width:100%;
+        margin-bottom:10px;
+    }
+
+    h2{
+        font-size:26px;
+    }
+
+    h5{
+        font-size:18px;
+    }
+
+    table{
+        display:block;
+        overflow-x:auto;
+        white-space:nowrap;
+    }
+
+    img{
+        max-width:100%;
+        height:auto;
+    }
 }
